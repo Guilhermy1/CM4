@@ -73,7 +73,12 @@
     },
 
     pagamentos: {
-      checkout: (orderId, metodo) => request('/payments/checkout', { method: 'POST', body: { orderId, metodo } })
+      /** Abre a sessao de pagamento no gateway (MercadoPago/Stripe). */
+      checkout: (orderId, metodo) => request('/payments/checkout', { method: 'POST', body: { orderId, metodo } }),
+      /** Confirma a cobranca. No fluxo real quem chama isso e o webhook do gateway. */
+      confirmar: (orderId, transacaoId) => request('/payments/confirmar', { method: 'POST', body: { orderId, transacaoId } }),
+      /** Consulta o status do pagamento de um pedido. */
+      status: (orderId) => request(`/payments/status/${orderId}`)
     }
   };
 

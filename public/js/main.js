@@ -49,7 +49,7 @@
   let cena3d = null;
   const stage = $('#stage3d');
   if (stage) {
-    cena3d = window.iPhone3D(stage, { cor: '#3a3f47' });
+    cena3d = window.iPhone3D(stage, { cor: '#b8b0a5' });
     const loader = $('#stageLoader');
     if (loader) setTimeout(() => loader.classList.add('hidden'), cena3d ? 500 : 200);
     if (!cena3d) $('.stage-fallback', stage)?.classList.add('on');
@@ -78,13 +78,13 @@
     if (btn) btn.classList.toggle('btn-primary', qtd > 0);
 
     if (!itens.length) {
-      body.innerHTML = '<div class="cart-empty">Seu carrinho está vazio.<br>Escolha um modelo para reservar.</div>';
+      body.innerHTML = '<div class="cart-empty">Sua sacola está vazia.<br>Escolha um modelo para comprar.</div>';
       return;
     }
 
     body.innerHTML = itens.map((i) => `
       <div class="cart-item">
-        <div class="thumb" style="background:linear-gradient(150deg, ${i.hex || '#2c3138'}, #101216)"></div>
+        <div class="thumb" style="background:${i.hex || '#D8D8DC'}"></div>
         <div>
           <h4>${i.nome}</h4>
           <p>${i.cor} · ${i.armazenamento}</p>
@@ -157,7 +157,7 @@
       <div class="preco">${window.brl(variante?.preco ?? produto.precoBase)}<small>ou 12x sem juros</small></div>
 
       <button class="btn btn-primary btn-block" data-add="${id}" ${estoque === 0 ? 'disabled' : ''}>
-        ${estoque === 0 ? 'Indisponível' : 'Adicionar à reserva'}
+        ${estoque === 0 ? 'Indisponível' : 'Adicionar à sacola'}
       </button>
     </article>`;
   }

@@ -82,7 +82,7 @@
   /* ================== ABAS ================== */
   const TITULOS = {
     dashboard: ['Dashboard', 'Visão geral da pré-venda do iPhone 18'],
-    pedidos: ['Pedidos', 'Acompanhe e atualize o status de cada reserva'],
+    pedidos: ['Pedidos', 'Acompanhe e atualize o status de cada pedido'],
     agendamentos: ['Agendamentos', 'Retiradas e entregas com data e hora'],
     estoque: ['Estoque', 'Disponibilidade por cor e capacidade'],
     produtos: ['Produtos', 'Cadastro e edição do catálogo']
@@ -107,9 +107,9 @@
     $('#infoModo').textContent = `Persistência: ${d.modo}`;
 
     $('#statsGrid').innerHTML = [
-      ['Faturamento reservado', window.brl(r.faturamento), `${r.pedidosAtivos} pedidos ativos`],
+      ['Faturamento', window.brl(r.faturamento), `${r.pedidosAtivos} pedidos ativos`],
       ['Pedidos', r.totalPedidos, `${r.pedidosPagos} pagos`],
-      ['Ticket médio', window.brl(r.ticketMedio), 'por reserva'],
+      ['Ticket médio', window.brl(r.ticketMedio), 'por pedido'],
       ['Agendamentos', r.totalAgendamentos, `${r.agendamentosHoje} para hoje`],
       ['Estoque total', r.estoqueTotal, `${r.totalProdutos} produtos`],
       ['Clientes', r.totalClientes, 'cadastrados']

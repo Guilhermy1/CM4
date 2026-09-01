@@ -5,11 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Checkout | CM4STORE</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#7FD000">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23080910'/><text y='68' x='50' text-anchor='middle' font-size='54' font-family='Arial' font-weight='bold' fill='%237FD000'>C4</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#F5F5F7">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23F5F5F7'/><text y='68' x='50' text-anchor='middle' font-size='50' font-family='Helvetica,Arial' font-weight='bold' fill='%237FD000'>C4</text></svg>">
 <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
@@ -17,16 +14,16 @@
 <header class="header scrolled">
   <div class="container">
     <a href="/" class="logo">CM4<b>STORE</b><small>CHECKOUT SEGURO</small></a>
-    <a href="/" class="btn btn-ghost" style="padding:10px 20px">Voltar à loja</a>
+    <a href="/" class="btn btn-ghost btn-sm">Voltar à loja</a>
   </div>
 </header>
 
 <main class="page">
   <div class="container">
-    <div class="section-head" style="margin-bottom:34px">
+    <div class="section-head" style="margin-bottom:var(--s4)">
       <span class="eyebrow">Etapa final</span>
-      <h1 class="h2">Finalize sua reserva</h1>
-      <p class="lead">Preencha seus dados, escolha como quer receber e agende o melhor dia e horário.</p>
+      <h1 class="h2">Finalize sua compra.</h1>
+      <p class="lead">Preencha seus dados, escolha como quer receber, agende o melhor horário e conclua o pagamento.</p>
     </div>
 
     <div class="alert alert-erro" id="alerta"></div>
@@ -34,10 +31,10 @@
     <form id="formCheckout" novalidate>
       <div class="checkout-grid">
         <div>
-          <!-- Dados pessoais -->
+          <!-- 1. Dados pessoais -->
           <section class="card">
-            <h3>Seus dados</h3>
-            <p class="card-sub">Usamos essas informações para confirmar a reserva e avisar sobre a chegada do aparelho.</p>
+            <h3>1. Seus dados</h3>
+            <p class="card-sub">Usamos essas informações para emitir o pedido e avisar sobre a chegada do aparelho.</p>
             <div class="form-grid">
               <div class="field full"><label for="nome">Nome completo</label><input id="nome" name="nome" autocomplete="name" required><span class="erro">Informe seu nome completo.</span></div>
               <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required><span class="erro">Informe um e-mail válido.</span></div>
@@ -46,16 +43,16 @@
             </div>
           </section>
 
-          <!-- Entrega -->
+          <!-- 2. Entrega -->
           <section class="card">
-            <h3>Como quer receber</h3>
+            <h3>2. Como quer receber</h3>
             <p class="card-sub">Retirada na loja ou entrega em mãos dentro da nossa região de cobertura.</p>
             <div class="radio-cards">
               <label class="radio-card"><input type="radio" name="tipoEntrega" value="retirada" checked><span class="box"><strong>Retirar na loja</strong><span>Agendamento com hora marcada, sem fila.</span></span></label>
               <label class="radio-card"><input type="radio" name="tipoEntrega" value="entrega"><span class="box"><strong>Entrega na região</strong><span>Levamos até você no dia e hora escolhidos.</span></span></label>
             </div>
 
-            <div id="camposEndereco" hidden style="margin-top:22px">
+            <div id="camposEndereco" hidden style="margin-top:var(--s3)">
               <div class="form-grid">
                 <div class="field"><label for="cep">CEP</label><input id="cep" name="cep" inputmode="numeric" placeholder="00000-000"><span class="erro">Informe o CEP.</span></div>
                 <div class="field"><label for="cidade">Cidade</label><input id="cidade" name="cidade"><span class="erro">Informe a cidade.</span></div>
@@ -68,23 +65,36 @@
             </div>
           </section>
 
-          <!-- Agendamento -->
+          <!-- 3. Agendamento -->
           <section class="card">
-            <h3>Agende data e horário</h3>
+            <h3>3. Agende data e horário</h3>
             <p class="card-sub" id="subAgenda">Escolha quando quer retirar seu iPhone 18.</p>
             <div class="date-scroll" id="datas"><span class="estoque-info">Carregando agenda…</span></div>
             <div class="hours-grid" id="horas"></div>
-            <div class="field" style="margin-top:22px"><label for="obs">Observações (opcional)</label><textarea id="obs" rows="3" placeholder="Ex.: prefiro ser avisado por WhatsApp"></textarea></div>
+            <div class="field" style="margin-top:var(--s3)"><label for="obs">Observações (opcional)</label><textarea id="obs" rows="3" placeholder="Ex.: prefiro ser avisado por WhatsApp"></textarea></div>
           </section>
 
-          <!-- Pagamento -->
+          <!-- 4. Pagamento -->
           <section class="card">
-            <h3>Pagamento</h3>
-            <p class="card-sub">Forma de pagamento pré-selecionada. A cobrança é feita na confirmação do estoque — gateway (MercadoPago/Stripe) será ativado nesta etapa.</p>
+            <h3>4. Pagamento</h3>
+            <p class="card-sub">Escolha a forma de pagamento. O processamento é feito por gateway certificado — a CM4STORE não armazena dados do seu cartão.</p>
             <div class="radio-cards">
-              <label class="radio-card"><input type="radio" name="metodo" value="pix" checked><span class="box"><strong>PIX</strong><span>Confirmação imediata na chegada do lote.</span></span></label>
-              <label class="radio-card"><input type="radio" name="metodo" value="cartao"><span class="box"><strong>Cartão</strong><span>Em até 12x sem juros.</span></span></label>
+              <label class="radio-card"><input type="radio" name="metodo" value="pix" checked><span class="box"><strong>PIX</strong><span>Aprovação imediata, sem taxas.</span></span></label>
+              <label class="radio-card"><input type="radio" name="metodo" value="cartao"><span class="box"><strong>Cartão de crédito</strong><span>Em até 12x sem juros.</span></span></label>
               <label class="radio-card"><input type="radio" name="metodo" value="boleto"><span class="box"><strong>Boleto</strong><span>Compensação em até 2 dias úteis.</span></span></label>
+            </div>
+
+            <!-- PLACEHOLDER DO GATEWAY: aqui entra o SDK do MercadoPago (Checkout Bricks)
+                 ou do Stripe (Payment Element). O container abaixo ja esta pronto para receber o iframe. -->
+            <div class="pay-gateway" id="gatewayBox">
+              <span class="tagline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Ambiente de pagamento seguro
+              </span>
+              <p id="gatewayTexto">Ao confirmar, você é direcionado ao ambiente do gateway para concluir o pagamento com segurança.</p>
+              <div class="pay-brands"><span>MercadoPago</span><span>Stripe</span><span>PIX</span><span>Visa</span><span>Mastercard</span><span>Elo</span></div>
+              <!-- Montagem do SDK: document.getElementById('gatewayMount') -->
+              <div id="gatewayMount"></div>
             </div>
           </section>
         </div>
@@ -92,23 +102,38 @@
         <!-- Resumo -->
         <aside class="resumo">
           <section class="card">
-            <h3>Resumo da reserva</h3>
-            <div id="resumoItens" style="margin:18px 0;display:grid;gap:12px"></div>
+            <h3>Resumo do pedido</h3>
+            <div id="resumoItens" style="margin:var(--s3) 0;display:grid;gap:12px"></div>
             <div class="resumo-linha"><span>Subtotal</span><span id="subtotal">R$ 0,00</span></div>
             <div class="resumo-linha"><span>Frete / retirada</span><span class="neon">Cortesia</span></div>
             <div class="resumo-linha total"><span>Total</span><span id="total">R$ 0,00</span></div>
 
-            <button class="btn btn-primary btn-block" type="submit" id="btnFinalizar" style="margin-top:22px">Confirmar reserva</button>
-            <a href="/" class="btn btn-ghost btn-block" style="margin-top:10px">Continuar escolhendo</a>
+            <button class="btn btn-primary btn-block" type="submit" id="btnFinalizar" style="margin-top:var(--s3)">Pagar</button>
+            <a href="/" class="btn btn-ghost btn-block" style="margin-top:10px">Continuar comprando</a>
 
-            <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Seus dados trafegam de forma segura</div>
-            <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Cancelamento gratuito antes da retirada</div>
+            <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Pagamento processado em ambiente seguro</div>
+            <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Cancelamento gratuito até 48h antes</div>
           </section>
         </aside>
       </div>
     </form>
   </div>
 </main>
+
+<!-- Overlay de processamento de pagamento -->
+<div class="pay-overlay" id="payOverlay" role="status" aria-live="polite">
+  <div class="pay-box">
+    <div class="spinner" id="paySpinner"></div>
+    <h4 id="payTitulo">Processando pagamento…</h4>
+    <p id="payTexto">Não feche nem atualize esta página.</p>
+    <ul class="pay-steps" id="paySteps">
+      <li data-passo="pedido">Registrando o pedido</li>
+      <li data-passo="gateway">Conectando ao gateway de pagamento</li>
+      <li data-passo="cobranca">Autorizando a cobrança</li>
+      <li data-passo="agenda">Confirmando o agendamento</li>
+    </ul>
+  </div>
+</div>
 
 <script src="/js/api.js"></script>
 <script src="/js/cart.js"></script>

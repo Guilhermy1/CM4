@@ -1,8 +1,10 @@
-# CM4STORE — Pré-venda iPhone 18
+# CM4STORE — iPhone 18
 
-Plataforma completa de pré-venda (landing page 3D + API REST + painel administrativo + checkout com agendamento), pronta para deploy na Vercel.
+Plataforma completa de venda (landing page 3D + API REST + painel administrativo + checkout com pagamento e agendamento), pronta para deploy na Vercel.
 
-**Marca:** CM4STORE · Verde Neon `#7FD000` · Preto/Grafite · Branco — Apple | JBL | Xiaomi
+**Marca:** CM4STORE · Verde `#7FD000` · Cinza escuro · Branco — Apple | JBL | Xiaomi
+
+**Design:** linguagem visual inspirada na Apple — fundo cinza claro (`#F5F5F7`), tipografia do sistema (`-apple-system` / Helvetica Neue), espaçamento generoso (escala 8/16/24/32/48/64/96), cards claros e animações discretas — mantendo o verde CM4STORE como cor de ação.
 
 ---
 
@@ -10,11 +12,12 @@ Plataforma completa de pré-venda (landing page 3D + API REST + painel administr
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | HTML5, CSS3 e JavaScript puro (sem build step) |
-| 3D | Three.js (r128 via CDN) — iPhone gerado proceduralmente |
+| Frontend | HTML5, CSS3 e JavaScript puro (sem build step, sem webfonts externas) |
+| 3D | Three.js (r128 local, CDN como fallback) — iPhone gerado proceduralmente, iluminado para fundo claro |
 | Backend | Node.js + Express 4 |
 | Banco | MongoDB (Mongoose) **ou** repositório em memória (fallback automático) |
 | Auth | JWT + bcrypt |
+| Pagamento | Gateway plugável — placeholder pronto para MercadoPago / Stripe |
 | Deploy | Vercel (`@vercel/node` + estáticos) |
 
 > **Sem `MONGODB_URI` a aplicação sobe normalmente** usando um repositório em memória com dados de demonstração. Basta preencher a variável para migrar para o MongoDB sem alterar uma linha de código.
@@ -56,9 +59,9 @@ cm4store/
 │  ├─ middleware/            # auth JWT + tratamento de erros
 │  └─ utils/                 # seed, helpers
 └─ public/
-   ├─ index.html             # landing (hero 3D, features, modelos, FAQ)
-   ├─ checkout.html          # checkout + agendamento
-   ├─ confirmacao.html       # confirmação do pedido
+   ├─ index.html             # landing (hero 3D, features, specs, modelos, FAQ)
+   ├─ checkout.html          # checkout + agendamento + pagamento
+   ├─ confirmacao.html       # nº do pedido, pagamento e dados do agendamento
    ├─ admin/index.html       # painel administrativo
    ├─ css/ (main.css, admin.css)
    └─ js/ (api.js, cart.js, iphone3d.js, main.js, checkout.js, admin.js)
@@ -82,7 +85,10 @@ Base: `/api`
 | GET | `/appointments/disponibilidade?dias=14` | agenda com vagas por horário |
 | POST | `/appointments` | cria agendamento avulso |
 | POST | `/auth/registrar` · `/auth/login` | cadastro e login de cliente |
-| POST | `/payments/checkout` · `/payments/webhook` | **placeholder** do gateway |
+| POST | `/payments/checkout` | abre a sessão de pagamento no gateway |
+| POST | `/payments/confirmar` | confirma a cobrança (**apenas** no modo placeholder) |
+| GET | `/payments/status/:orderId` | status do pagamento de um pedido |
+| POST | `/payments/webhook` | callback do gateway (MercadoPago / Stripe) |
 
 ### Restrito (JWT admin — header `Authorization: Bearer <token>`)
 | Método | Rota | Descrição |
@@ -104,6 +110,30 @@ Base: `/api`
 - **Estoque:** baixa automática na criação do pedido e devolução ao cancelar.
 - **Agenda:** seg–sáb, 16 horários (09:00–17:30), **2 vagas por horário** (`CAPACIDADE_POR_SLOT` em `src/utils/helpers.js`). Slots lotados são bloqueados no front e validados no back.
 - **Entrega:** retirada agendada ou entrega na região (endereço validado quando aplicável). Sem segmentação geográfica no site — fica a cargo do Meta Ads.
+- **Pagamento:** o pedido nasce como `aguardando_pagamento`; `POST /payments/checkout` abre a sessão e marca o pagamento como `processando`; a aprovação (webhook, ou `POST /payments/confirmar` no modo placeholder) move o pedido para `pago`. Confirmar duas vezes é idempotente e um pedido já pago recusa novo checkout com `409`.
+
+---
+
+## Gateway de pagamento
+
+O contrato consumido pelo front **já é o contrato final**. Para ativar a cobrança real basta implementar as funções de `gateway` em `src/routes/payments.js` e configurar as variáveis de ambiente:
+
+```bash
+PAYMENT_GATEWAY=placeholder   # placeholder | mercadopago | stripe
+PUBLIC_URL=https://sua-loja.vercel.app
+
+MP_ACCESS_TOKEN=              # MercadoPago
+MP_WEBHOOK_SECRET=
+
+STRIPE_SECRET_KEY=            # Stripe
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
+
+- **`placeholder` (padrão):** nenhuma cobrança real é feita. O checkout simula a aprovação, exibe o overlay *"Processando pagamento…"* e leva à confirmação com o número do pedido.
+- **MercadoPago:** criar uma `Preference` e devolver `init_point` como `checkoutUrl` — o front redireciona sozinho quando esse campo vier preenchido.
+- **Stripe:** criar um `PaymentIntent` e devolver `client_secret`; o container `#gatewayMount` no `checkout.html` já está reservado para o Payment Element.
+- Com gateway real, quem confirma o pagamento é **o webhook** — `/payments/confirmar` passa a responder `409`. Valide a assinatura do webhook antes de confiar no payload.
 
 ---
 
@@ -113,16 +143,22 @@ Base: `/api`
 2. Importe na Vercel (framework: **Other**; build command vazio; output vazio).
 3. Configure as variáveis de ambiente:
    - `MONGODB_URI` (Atlas — recomendado em produção)
-   - `JWT_SECRET` (obrigatório trocar)
+   - `JWT_SECRET` (**obrigatório trocar** — veja a nota de segurança abaixo)
    - `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+   - `PUBLIC_URL` (usada nas URLs de retorno do gateway)
+   - `PAYMENT_GATEWAY` e as chaves do provedor escolhido
    - `PRECO_PADRAO` (opcional)
 4. Deploy. O `vercel.json` já roteia `/api/*` para a função Node e o restante para os estáticos.
 
 ---
 
+> ⚠️ **Segurança:** o `vercel.json` versionado contém um `JWT_SECRET` de exemplo. Como o repositório é público, esse valor deve ser considerado comprometido: gere um novo segredo, configure-o **apenas** no painel de variáveis de ambiente da Vercel e remova o bloco `env` do `vercel.json`.
+
+---
+
 ## Próximos passos (pós-lançamento)
 
-- Plugar MercadoPago ou Stripe em `src/routes/payments.js` (contrato e webhook já prontos).
+- Implementar as funções de `gateway` em `src/routes/payments.js` para MercadoPago ou Stripe (contrato, webhook e status já prontos).
 - Atualizar specs, fotos e tabela de preços reais em `src/utils/seedData.js`.
 - Disparo de e-mail/WhatsApp na confirmação do pedido e lembrete de agendamento.
 - Área do cliente reaproveitando `/api/auth` (já implementada).

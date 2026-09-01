@@ -24,18 +24,22 @@
     if (THREE.sRGBEncoding !== undefined) renderer.outputEncoding = THREE.sRGBEncoding;
     container.appendChild(renderer.domElement);
 
-    /* ---------- Luzes ---------- */
-    cena.add(new THREE.AmbientLight(0xffffff, 0.55));
+    /* ---------- Luzes (calibradas para fundo claro) ---------- */
+    cena.add(new THREE.AmbientLight(0xffffff, 0.9));
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+    // Luz de ambiente hemisferica: ceu claro + rebote do "chao" cinza
+    if (THREE.HemisphereLight) cena.add(new THREE.HemisphereLight(0xffffff, 0xd6d6da, 0.85));
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.35);
     keyLight.position.set(5, 7, 8);
     cena.add(keyLight);
 
-    const rimNeon = new THREE.PointLight(0x7fd000, 4.2, 40);
+    // Rim verde CM4STORE - discreto sobre fundo claro
+    const rimNeon = new THREE.PointLight(0x7fd000, 2.2, 40);
     rimNeon.position.set(-6, 3, -4);
     cena.add(rimNeon);
 
-    const fill = new THREE.PointLight(0xffffff, 1.6, 40);
+    const fill = new THREE.PointLight(0xffffff, 2.0, 40);
     fill.position.set(6, -4, 4);
     cena.add(fill);
 
@@ -63,7 +67,7 @@
 
     /* ---------- Materiais ---------- */
     const matCorpo = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(opcoes.cor || '#3a3f47'), metalness: 0.92, roughness: 0.28
+      color: new THREE.Color(opcoes.cor || '#b8b0a5'), metalness: 0.92, roughness: 0.28
     });
     const matTela = new THREE.MeshStandardMaterial({
       color: 0x05070a, metalness: 0.15, roughness: 0.08,
@@ -148,13 +152,23 @@
     telefone.rotation.set(0.12, -0.42, 0);
     cena.add(telefone);
 
-    // Halo neon atras do aparelho
+    // Halo suave atras do aparelho (fundo claro: cinza levemente esverdeado)
     const halo = new THREE.Mesh(
       new THREE.CircleGeometry(4.2, 48),
-      new THREE.MeshBasicMaterial({ color: 0x7fd000, transparent: true, opacity: 0.055 })
+      new THREE.MeshBasicMaterial({ color: 0x7fd000, transparent: true, opacity: 0.035 })
     );
     halo.position.z = -3.2;
     cena.add(halo);
+
+    // Sombra de contato sob o aparelho, ancorando o objeto no fundo claro
+    const sombra = new THREE.Mesh(
+      new THREE.CircleGeometry(1.9, 40),
+      new THREE.MeshBasicMaterial({ color: 0x1d1d1f, transparent: true, opacity: 0.1 })
+    );
+    sombra.rotation.x = -Math.PI / 2;
+    sombra.position.set(0, -3.75, 0);
+    sombra.scale.set(1, 0.5, 1);
+    cena.add(sombra);
 
     /* ---------- Interacao (arrastar) ---------- */
     const estado = { alvoY: -0.42, alvoX: 0.12, arrastando: false, ultX: 0, ultY: 0, autoRotacao: true };
@@ -193,9 +207,15 @@
 
       telefone.rotation.y += (estado.alvoY - telefone.rotation.y) * 0.08;
       telefone.rotation.x += (estado.alvoX - telefone.rotation.x) * 0.08;
-      telefone.position.y = Math.sin(t * 0.9) * 0.13;
+      const flutuar = Math.sin(t * 0.9) * 0.13;
+      telefone.position.y = flutuar;
       matTela.emissiveIntensity = 0.12 + Math.sin(t * 1.5) * 0.05;
-      rimNeon.intensity = 3.6 + Math.sin(t * 1.2) * 0.9;
+      rimNeon.intensity = 2.0 + Math.sin(t * 1.2) * 0.5;
+
+      // sombra acompanha o flutuar (menor e mais fraca quando o aparelho sobe)
+      const s = 1 - flutuar * 0.28;
+      sombra.scale.set(s, s * 0.5, 1);
+      sombra.material.opacity = 0.1 - flutuar * 0.022;
 
       renderer.render(cena, camera);
     }
@@ -217,7 +237,7 @@
     global.addEventListener('resize', redimensionar);
 
     return {
-      definirCor(hex) { matCorpo.color = new THREE.Color(hex || '#3a3f47'); },
+      definirCor(hex) { matCorpo.color = new THREE.Color(hex || '#b8b0a5'); },
       destruir() { cancelAnimationFrame(rafId); renderer.dispose(); el.remove(); }
     };
   }
