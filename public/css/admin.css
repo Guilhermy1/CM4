@@ -1,0 +1,111 @@
+/* CM4STORE - Painel administrativo */
+
+.login-wrap { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+.login-card { width: min(420px, 100%); }
+.login-card .logo { justify-content: center; font-size: 1.6rem; margin-bottom: 6px; }
+
+.admin-shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100dvh; }
+
+.sidebar {
+  background: var(--surface); border-right: 1px solid var(--border);
+  padding: 26px 18px; display: flex; flex-direction: column; gap: 26px;
+  position: sticky; top: 0; height: 100dvh;
+}
+.sidebar .logo { font-size: 1.25rem; padding: 0 8px; }
+.side-nav { display: grid; gap: 4px; }
+.side-nav button {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 12px 14px; border-radius: 12px; background: none; border: 0; cursor: pointer;
+  color: var(--text-muted); font-size: .93rem; text-align: left; transition: .2s;
+}
+.side-nav button:hover { background: var(--surface-2); color: var(--text); }
+.side-nav button.ativo { background: rgba(127,208,0,.12); color: var(--neon); font-weight: 600; }
+.side-foot { margin-top: auto; display: grid; gap: 10px; font-size: .8rem; color: var(--text-muted); padding: 0 8px; }
+
+.admin-main { padding: 30px 32px 60px; min-width: 0; }
+.admin-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.admin-head h1 { font-size: 1.7rem; }
+.admin-head p { color: var(--text-muted); font-size: .9rem; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 26px; }
+.stat {
+  padding: 22px; border-radius: var(--radius); background: var(--surface);
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.stat::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--neon); opacity: .8; }
+.stat .rotulo { font-size: .74rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text-muted); }
+.stat .valor { font-size: 1.85rem; font-weight: 800; letter-spacing: -.02em; margin-top: 8px; }
+.stat .sub { font-size: .8rem; color: var(--text-muted); margin-top: 4px; }
+
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 22px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.panel-head h2 { font-size: 1.12rem; }
+.panel-head .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.tabela-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 640px; }
+th, td { padding: 13px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+th { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); font-weight: 600; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+td.acoes { white-space: nowrap; display: flex; gap: 6px; align-items: center; }
+
+.pill { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: .74rem; font-weight: 600; white-space: nowrap; }
+.pill-cinza { background: rgba(255,255,255,.07); color: var(--text-muted); }
+.pill-neon { background: rgba(127,208,0,.14); color: var(--neon); }
+.pill-azul { background: rgba(80,160,255,.14); color: #7fb8ff; }
+.pill-amarelo { background: rgba(255,180,32,.14); color: #ffc656; }
+.pill-vermelho { background: rgba(255,90,90,.14); color: #ff8b8b; }
+
+select.mini, input.mini {
+  padding: 7px 10px; border-radius: 9px; background: var(--surface-2);
+  border: 1px solid var(--border); font-size: .82rem;
+}
+select.mini:focus, input.mini:focus { outline: none; border-color: var(--neon); }
+.btn-mini { padding: 7px 14px; font-size: .8rem; border-radius: 9px; }
+
+.chart { display: flex; align-items: flex-end; gap: 10px; height: 170px; padding-top: 10px; }
+.chart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 8px; height: 100%; }
+.chart .barra {
+  width: 100%; max-width: 46px; border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, var(--neon), rgba(127,208,0,.22)); min-height: 4px;
+  transition: height .6s cubic-bezier(.3,1,.4,1);
+}
+.chart .rotulo { font-size: .7rem; color: var(--text-muted); }
+.chart .qtd { font-size: .74rem; font-weight: 700; }
+
+.two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px; }
+.lista-simples { display: grid; gap: 10px; }
+.linha-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 13px 15px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border);
+}
+.linha-item small { color: var(--text-muted); display: block; font-size: .78rem; }
+
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+  display: none; place-items: center; padding: 24px; z-index: 300; overflow-y: auto;
+}
+.modal-bg.open { display: grid; }
+.modal { width: min(640px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+.modal h3 { margin-bottom: 18px; }
+.modal .form-grid { margin-bottom: 20px; }
+.modal-acoes { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+.vazio { text-align: center; color: var(--text-muted); padding: 40px 10px; font-size: .9rem; }
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px);
+  background: var(--surface-2); border: 1px solid var(--neon); color: var(--text);
+  padding: 13px 22px; border-radius: 999px; font-size: .88rem; z-index: 400;
+  opacity: 0; pointer-events: none; transition: .3s;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.toast.erro { border-color: #ff6b6b; }
+
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 14px; }
+  .side-nav { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; width: 100%; }
+  .side-foot { display: none; }
+  .admin-main { padding: 22px 18px 50px; }
+  .two-col { grid-template-columns: 1fr; }
+}

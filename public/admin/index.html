@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel Admin | CM4STORE</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#7FD000">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23080910'/><text y='68' x='50' text-anchor='middle' font-size='54' font-family='Arial' font-weight='bold' fill='%237FD000'>C4</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-wrap" id="telaLogin">
+  <form class="card login-card" id="formLogin">
+    <div class="logo">CM4<b>STORE</b></div>
+    <p class="card-sub" style="text-align:center">Painel administrativo</p>
+    <div class="alert alert-erro" id="loginErro"></div>
+    <div class="form-grid" style="grid-template-columns:1fr">
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" required></div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:18px" type="submit" id="btnLogin">Entrar</button>
+    <p class="estoque-info" style="text-align:center;margin-top:16px">Acesso padrão do esboço: admin@cm4store.com / cm4store123</p>
+  </form>
+</div>
+
+<!-- ============ PAINEL ============ -->
+<div class="admin-shell" id="telaAdmin" hidden>
+  <aside class="sidebar">
+    <a href="/" class="logo">CM4<b>STORE</b></a>
+    <nav class="side-nav" id="sideNav">
+      <button data-aba="dashboard" class="ativo">Dashboard</button>
+      <button data-aba="pedidos">Pedidos</button>
+      <button data-aba="agendamentos">Agendamentos</button>
+      <button data-aba="estoque">Estoque</button>
+      <button data-aba="produtos">Produtos</button>
+    </nav>
+    <div class="side-foot">
+      <span id="infoUsuario"></span>
+      <span id="infoModo"></span>
+      <button class="btn btn-ghost btn-mini" id="btnSair">Sair</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-head">
+      <div><h1 id="tituloAba">Dashboard</h1><p id="subAba">Visão geral da pré-venda do iPhone 18</p></div>
+      <button class="btn btn-ghost btn-mini" id="btnAtualizar">Atualizar dados</button>
+    </div>
+
+    <!-- Dashboard -->
+    <section data-painel="dashboard">
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Reservas nos últimos 7 dias</h2></div>
+          <div class="chart" id="chart7"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Vendas por modelo</h2></div>
+          <div class="lista-simples" id="porModelo"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Últimos pedidos</h2></div>
+          <div class="lista-simples" id="ultimosPedidos"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Próximos agendamentos</h2></div>
+          <div class="lista-simples" id="proximosAg"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pedidos -->
+    <section data-painel="pedidos" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Gerenciamento de pedidos</h2>
+          <div class="acoes">
+            <select class="mini" id="filtroStatus">
+              <option value="">Todos os status</option>
+              <option value="aguardando_pagamento">Aguardando pagamento</option>
+              <option value="pago">Pago</option>
+              <option value="separacao">Em separação</option>
+              <option value="pronto_retirada">Pronto p/ retirada</option>
+              <option value="em_transito">Em trânsito</option>
+              <option value="concluido">Concluído</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+            <input class="mini" id="buscaPedido" placeholder="Buscar por nome, e-mail ou nº">
+          </div>
+        </div>
+        <div class="tabela-wrap"><table id="tabelaPedidos"></table></div>
+      </div>
+    </section>
+
+    <!-- Agendamentos -->
+    <section data-painel="agendamentos" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Agenda de retiradas e entregas</h2>
+          <div class="acoes">
+            <input class="mini" type="date" id="filtroData">
+            <select class="mini" id="filtroStatusAg">
+              <option value="">Todos</option>
+              <option value="agendado">Agendado</option>
+              <option value="confirmado">Confirmado</option>
+              <option value="concluido">Concluído</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="nao_compareceu">Não compareceu</option>
+            </select>
+          </div>
+        </div>
+        <div class="tabela-wrap"><table id="tabelaAgendamentos"></table></div>
+      </div>
+    </section>
+
+    <!-- Estoque -->
+    <section data-painel="estoque" hidden>
+      <div class="panel">
+        <div class="panel-head"><h2>Controle de estoque por variante</h2>
+          <div class="acoes"><input class="mini" id="buscaSku" placeholder="Filtrar por cor, capacidade ou SKU"></div>
+        </div>
+        <div class="tabela-wrap"><table id="tabelaEstoque"></table></div>
+      </div>
+    </section>
+
+    <!-- Produtos -->
+    <section data-painel="produtos" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Catálogo de produtos</h2>
+          <div class="acoes"><button class="btn btn-primary btn-mini" id="btnNovoProduto">Novo produto</button></div>
+        </div>
+        <div class="tabela-wrap"><table id="tabelaProdutos"></table></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal de produto -->
+<div class="modal-bg" id="modalProduto">
+  <form class="modal" id="formProduto">
+    <h3 id="modalTitulo">Novo produto</h3>
+    <input type="hidden" id="prodId">
+    <div class="form-grid">
+      <div class="field full"><label for="prodNome">Nome</label><input id="prodNome" required></div>
+      <div class="field"><label for="prodModelo">Modelo</label>
+        <select id="prodModelo"><option>18</option><option>18 Pro</option><option>18 Pro Max</option></select>
+      </div>
+      <div class="field"><label for="prodPreco">Preço base (R$)</label><input id="prodPreco" type="number" step="0.01" required></div>
+      <div class="field full"><label for="prodDesc">Descrição</label><textarea id="prodDesc" rows="3"></textarea></div>
+      <div class="field full"><label for="prodDestaques">Destaques (separados por vírgula)</label><input id="prodDestaques"></div>
+      <div class="field full"><label for="prodAtivo">Situação</label>
+        <select id="prodAtivo"><option value="true">Ativo</option><option value="false">Inativo</option></select>
+      </div>
+    </div>
+    <div class="modal-acoes">
+      <button type="button" class="btn btn-ghost btn-mini" id="cancelarProduto">Cancelar</button>
+      <button type="submit" class="btn btn-primary btn-mini">Salvar</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

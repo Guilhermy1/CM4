@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reserva confirmada | CM4STORE</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#7FD000">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23080910'/><text y='68' x='50' text-anchor='middle' font-size='54' font-family='Arial' font-weight='bold' fill='%237FD000'>C4</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<header class="header scrolled">
+  <div class="container">
+    <a href="/" class="logo">CM4<b>STORE</b></a>
+    <a href="/" class="btn btn-ghost" style="padding:10px 20px">Voltar à loja</a>
+  </div>
+</header>
+
+<main class="page">
+  <div class="container">
+    <div class="card confirm-box">
+      <div class="confirm-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <span class="eyebrow" style="justify-content:center">Tudo certo</span>
+      <h1 class="h2" style="margin:12px 0">Reserva confirmada!</h1>
+      <p class="lead" style="margin-inline:auto">Enviamos os detalhes para o seu e-mail. Avisaremos assim que o iPhone 18 chegar na loja.</p>
+
+      <div class="confirm-dados" id="dados">
+        <div class="dado-linha"><span>Carregando…</span><span></span></div>
+      </div>
+
+      <div class="hero-cta" style="justify-content:center;margin-top:32px">
+        <a href="/" class="btn btn-primary">Voltar à loja</a>
+        <button class="btn btn-ghost" onclick="window.print()">Imprimir comprovante</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/js/api.js"></script>
+<script>
+(function () {
+  'use strict';
+  const params = new URLSearchParams(location.search);
+  const numero = params.get('pedido');
+  const box = document.getElementById('dados');
+
+  const linha = (k, v) => `<div class="dado-linha"><span>${k}</span><span>${v}</span></div>`;
+  const dataBR = (d) => d ? d.split('-').reverse().join('/') : '—';
+
+  if (!numero) {
+    box.innerHTML = linha('Pedido', 'Não informado');
+    return;
+  }
+
+  API.pedidos.obter(numero).then(({ data }) => {
+    const itens = (data.itens || []).map((i) => `${i.quantidade}x ${i.nome} ${i.cor} ${i.armazenamento}`).join('<br>');
+    const ag = data.agendamento;
+    box.innerHTML = [
+      linha('Número do pedido', `<strong class="neon">${data.numero}</strong>`),
+      linha('Cliente', data.cliente.nome),
+      linha('E-mail', data.cliente.email),
+      linha('Itens', itens || '—'),
+      linha('Modalidade', data.entrega.tipo === 'entrega' ? 'Entrega na região' : 'Retirada na loja'),
+      ag ? linha('Agendamento', `${dataBR(ag.data)} às ${ag.hora}`) : '',
+      ag && data.entrega.tipo === 'retirada' ? linha('Unidade', ag.unidade) : '',
+      linha('Pagamento', `${(data.pagamento.metodo || '').toUpperCase()} · ${data.pagamento.status}`),
+      linha('Total', `<strong>${window.brl(data.total)}</strong>`)
+    ].join('');
+  }).catch(() => {
+    box.innerHTML = linha('Pedido', `${numero} (não encontrado)`);
+  });
+})();
+</script>
+</body>
+</html>

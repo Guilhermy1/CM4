@@ -1,0 +1,46 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/admin/?$",
+      "dest": "/public/admin/index.html"
+    },
+    {
+      "src": "/checkout/?$",
+      "dest": "/public/checkout.html"
+    },
+    {
+      "src": "/confirmacao/?$",
+      "dest": "/public/confirmacao.html"
+    },
+    {
+      "src": "/(.*\\.(css|js|png|jpg|jpeg|svg|webp|ico|woff2?|glb|gltf))$",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.html"
+    }
+  ],
+  "env": {
+    "JWT_SECRET": "HoVWAtnLBwTnVmsnDgproOWriCq9TCaoAaC_arZzous05_Nz3pJth_PoajfN1Obi",
+    "JWT_EXPIRES": "7d",
+    "MONGODB_URI": "",
+    "NODE_ENV": "production"
+  }
+}

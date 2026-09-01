@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout | CM4STORE</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#7FD000">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23080910'/><text y='68' x='50' text-anchor='middle' font-size='54' font-family='Arial' font-weight='bold' fill='%237FD000'>C4</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<header class="header scrolled">
+  <div class="container">
+    <a href="/" class="logo">CM4<b>STORE</b><small>CHECKOUT SEGURO</small></a>
+    <a href="/" class="btn btn-ghost" style="padding:10px 20px">Voltar à loja</a>
+  </div>
+</header>
+
+<main class="page">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:34px">
+      <span class="eyebrow">Etapa final</span>
+      <h1 class="h2">Finalize sua reserva</h1>
+      <p class="lead">Preencha seus dados, escolha como quer receber e agende o melhor dia e horário.</p>
+    </div>
+
+    <div class="alert alert-erro" id="alerta"></div>
+
+    <form id="formCheckout" novalidate>
+      <div class="checkout-grid">
+        <div>
+          <!-- Dados pessoais -->
+          <section class="card">
+            <h3>Seus dados</h3>
+            <p class="card-sub">Usamos essas informações para confirmar a reserva e avisar sobre a chegada do aparelho.</p>
+            <div class="form-grid">
+              <div class="field full"><label for="nome">Nome completo</label><input id="nome" name="nome" autocomplete="name" required><span class="erro">Informe seu nome completo.</span></div>
+              <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required><span class="erro">Informe um e-mail válido.</span></div>
+              <div class="field"><label for="telefone">WhatsApp</label><input id="telefone" name="telefone" inputmode="tel" placeholder="(00) 00000-0000" autocomplete="tel" required><span class="erro">Informe um telefone válido.</span></div>
+              <div class="field full"><label for="documento">CPF (opcional)</label><input id="documento" name="documento" inputmode="numeric" placeholder="000.000.000-00"></div>
+            </div>
+          </section>
+
+          <!-- Entrega -->
+          <section class="card">
+            <h3>Como quer receber</h3>
+            <p class="card-sub">Retirada na loja ou entrega em mãos dentro da nossa região de cobertura.</p>
+            <div class="radio-cards">
+              <label class="radio-card"><input type="radio" name="tipoEntrega" value="retirada" checked><span class="box"><strong>Retirar na loja</strong><span>Agendamento com hora marcada, sem fila.</span></span></label>
+              <label class="radio-card"><input type="radio" name="tipoEntrega" value="entrega"><span class="box"><strong>Entrega na região</strong><span>Levamos até você no dia e hora escolhidos.</span></span></label>
+            </div>
+
+            <div id="camposEndereco" hidden style="margin-top:22px">
+              <div class="form-grid">
+                <div class="field"><label for="cep">CEP</label><input id="cep" name="cep" inputmode="numeric" placeholder="00000-000"><span class="erro">Informe o CEP.</span></div>
+                <div class="field"><label for="cidade">Cidade</label><input id="cidade" name="cidade"><span class="erro">Informe a cidade.</span></div>
+                <div class="field full"><label for="endereco">Endereço</label><input id="endereco" name="endereco"><span class="erro">Informe o endereço.</span></div>
+                <div class="field"><label for="numero">Número</label><input id="numero" name="numero"><span class="erro">Informe o número.</span></div>
+                <div class="field"><label for="complemento">Complemento</label><input id="complemento" name="complemento"></div>
+                <div class="field"><label for="bairro">Bairro</label><input id="bairro" name="bairro"></div>
+                <div class="field"><label for="uf">UF</label><input id="uf" name="uf" maxlength="2" placeholder="SP"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Agendamento -->
+          <section class="card">
+            <h3>Agende data e horário</h3>
+            <p class="card-sub" id="subAgenda">Escolha quando quer retirar seu iPhone 18.</p>
+            <div class="date-scroll" id="datas"><span class="estoque-info">Carregando agenda…</span></div>
+            <div class="hours-grid" id="horas"></div>
+            <div class="field" style="margin-top:22px"><label for="obs">Observações (opcional)</label><textarea id="obs" rows="3" placeholder="Ex.: prefiro ser avisado por WhatsApp"></textarea></div>
+          </section>
+
+          <!-- Pagamento -->
+          <section class="card">
+            <h3>Pagamento</h3>
+            <p class="card-sub">Forma de pagamento pré-selecionada. A cobrança é feita na confirmação do estoque — gateway (MercadoPago/Stripe) será ativado nesta etapa.</p>
+            <div class="radio-cards">
+              <label class="radio-card"><input type="radio" name="metodo" value="pix" checked><span class="box"><strong>PIX</strong><span>Confirmação imediata na chegada do lote.</span></span></label>
+              <label class="radio-card"><input type="radio" name="metodo" value="cartao"><span class="box"><strong>Cartão</strong><span>Em até 12x sem juros.</span></span></label>
+              <label class="radio-card"><input type="radio" name="metodo" value="boleto"><span class="box"><strong>Boleto</strong><span>Compensação em até 2 dias úteis.</span></span></label>
+            </div>
+          </section>
+        </div>
+
+        <!-- Resumo -->
+        <aside class="resumo">
+          <section class="card">
+            <h3>Resumo da reserva</h3>
+            <div id="resumoItens" style="margin:18px 0;display:grid;gap:12px"></div>
+            <div class="resumo-linha"><span>Subtotal</span><span id="subtotal">R$ 0,00</span></div>
+            <div class="resumo-linha"><span>Frete / retirada</span><span class="neon">Cortesia</span></div>
+            <div class="resumo-linha total"><span>Total</span><span id="total">R$ 0,00</span></div>
+
+            <button class="btn btn-primary btn-block" type="submit" id="btnFinalizar" style="margin-top:22px">Confirmar reserva</button>
+            <a href="/" class="btn btn-ghost btn-block" style="margin-top:10px">Continuar escolhendo</a>
+
+            <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Seus dados trafegam de forma segura</div>
+            <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Cancelamento gratuito antes da retirada</div>
+          </section>
+        </aside>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/checkout.js"></script>
+</body>
+</html>
