@@ -46,14 +46,65 @@
   });
 
   /* ---------- Cena 3D ---------- */
+  const COR_INICIAL = { cor: 'Purple', hex: '#7C6BA8' };
+
   let cena3d = null;
   const stage = $('#stage3d');
   if (stage) {
-    cena3d = window.iPhone3D(stage, { cor: '#b8b0a5' });
+    cena3d = window.iPhone3D(stage, { cor: COR_INICIAL.hex });
     const loader = $('#stageLoader');
     if (loader) setTimeout(() => loader.classList.add('hidden'), cena3d ? 500 : 200);
     if (!cena3d) $('.stage-fallback', stage)?.classList.add('on');
   }
+
+  /* ---------- Seletor de cores (rotaciona + troca a cor do 3D) ---------- */
+  const picker = $('#colorPicker');
+  const nomeCor = $('#corSelecionada');
+  const fallbackPhone = $('.phone-css');
+  let corAtual = COR_INICIAL.cor;
+
+  function pintarFallback(hex) {
+    if (!fallbackPhone) return;
+    fallbackPhone.style.background = `linear-gradient(160deg, ${hex}dd, ${hex} 55%, ${hex}88)`;
+  }
+
+  function selecionarCor(cor, hex, { girar = true, propagar = true } = {}) {
+    if (!cor || !hex) return;
+    corAtual = cor;
+
+    if (nomeCor && nomeCor.textContent !== cor) {
+      nomeCor.textContent = cor;
+      // reinicia a animacao de troca do rotulo
+      nomeCor.style.animation = 'none';
+      void nomeCor.offsetWidth;
+      nomeCor.style.animation = '';
+    }
+
+    $$('.swatch', picker || document).forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.cor === cor));
+    });
+
+    if (cena3d) cena3d.definirCor(hex, { girar });
+    pintarFallback(hex);
+
+    // mantem os cards do catalogo em sincronia com a cor escolhida
+    if (propagar && catalogo.length) {
+      catalogo.forEach((p) => {
+        const id = p.id || p._id;
+        const temCor = (p.variantes || []).some((v) => v.cor === cor);
+        if (!temCor) return;
+        estadoSelecao.set(id, { ...(estadoSelecao.get(id) || {}), cor });
+      });
+      render();
+    }
+  }
+
+  if (picker) {
+    $$('.swatch', picker).forEach((b) => {
+      b.addEventListener('click', () => selecionarCor(b.dataset.cor, b.dataset.hex));
+    });
+  }
+  pintarFallback(COR_INICIAL.hex);
 
   /* ---------- Carrinho ---------- */
   const overlay = $('#overlay');
@@ -172,11 +223,12 @@
       const produto = catalogo.find((p) => String(p.id || p._id) === id);
 
       $$('[data-cor]', card).forEach((b) => b.addEventListener('click', () => {
-        const atual = estadoSelecao.get(id) || {};
-        estadoSelecao.set(id, { ...atual, cor: b.dataset.cor });
-        const hex = (produto.variantes.find((v) => v.cor === b.dataset.cor) || {}).hex;
-        if (cena3d && hex) cena3d.definirCor(hex);
-        render();
+        const cor = b.dataset.cor;
+        const hex = (produto.variantes.find((v) => v.cor === cor) || {}).hex;
+        estadoSelecao.set(id, { ...(estadoSelecao.get(id) || {}), cor });
+        // sincroniza o seletor principal + gira o modelo 3D
+        if (hex) selecionarCor(cor, hex);
+        else render();
       }));
 
       $$('[data-arm]', card).forEach((b) => b.addEventListener('click', () => {

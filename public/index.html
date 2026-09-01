@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CM4STORE | iPhone 18</title>
-<meta name="description" content="Compre o iPhone 18 na CM4STORE. Pagamento online, retirada agendada ou entrega na região. Apple, JBL e Xiaomi com o melhor atendimento.">
+<title>CM4STORE | iPhone 18 Pro e iPhone 18 Pro Max</title>
+<meta name="description" content="Compre o iPhone 18 Pro e o iPhone 18 Pro Max na CM4STORE. Quatro cores em titânio, pagamento online, retirada agendada ou entrega na região.">
 <meta name="theme-color" content="#F5F5F7">
-<meta property="og:title" content="CM4STORE | iPhone 18">
-<meta property="og:description" content="Compre seu iPhone 18 com a CM4STORE. Pague online e agende a retirada.">
+<meta property="og:title" content="CM4STORE | iPhone 18 Pro e iPhone 18 Pro Max">
+<meta property="og:description" content="Escolha sua cor, pague online e agende a retirada do seu iPhone 18 Pro.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23F5F5F7'/><text y='68' x='50' text-anchor='middle' font-size='50' font-family='Helvetica,Arial' font-weight='bold' fill='%237FD000'>C4</text></svg>">
 <link rel="stylesheet" href="/css/main.css">
@@ -16,13 +16,12 @@
 
 <header class="header" id="header">
   <div class="container">
-    <a href="/" class="logo">CM4<b>STORE</b><small>APPLE · JBL · XIAOMI</small></a>
+    <a href="/" class="logo">CM4<b>STORE</b><small>iPHONE 18 PRO</small></a>
     <nav class="nav" id="nav">
-      <a href="#recursos">Recursos</a>
+      <a href="#cores">Cores</a>
       <a href="#specs">Especificações</a>
       <a href="#modelos">Modelos</a>
       <a href="#como-funciona">Como funciona</a>
-      <a href="#faq">Dúvidas</a>
     </nav>
     <div class="header-actions">
       <button class="cart-btn" id="abrirCarrinho" aria-label="Abrir carrinho">
@@ -40,8 +39,8 @@
   <div class="container">
     <div class="hero-copy">
       <span class="eyebrow"><i class="dot"></i> Novo na CM4STORE</span>
-      <h1 class="display">iPhone 18</h1>
-      <p class="lead">Titânio, chip A20 e a melhor câmera já feita para um iPhone.<br>Compre online e agende sua retirada.</p>
+      <h1 class="display">iPhone 18 Pro<span class="sep">|</span>iPhone 18 Pro Max</h1>
+      <p class="lead">Titânio, chip A20 Pro e a melhor câmera já feita para um iPhone.<br>Compre online e agende sua retirada.</p>
 
       <div class="hero-price">
         <div class="valor" id="heroPreco">R$ 14.999,97</div>
@@ -49,8 +48,8 @@
       </div>
 
       <div class="hero-cta">
-        <a href="#modelos" class="btn btn-primary">Comprar iPhone 18</a>
-        <a href="#recursos" class="btn btn-link">Saiba mais &rsaquo;</a>
+        <a href="#modelos" class="btn btn-primary">Comprar iPhone 18 Pro</a>
+        <a href="#cores" class="btn btn-link">Ver as cores &rsaquo;</a>
       </div>
 
       <div class="hero-badges">
@@ -60,6 +59,37 @@
         <span class="badge">Garantia Apple</span>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============ CORES + 3D ============ -->
+<section class="section showcase" id="cores">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Acabamento em titânio</span>
+      <h2 class="h2">Quatro cores. Uma escolha.</h2>
+      <p class="lead">Toque em uma cor para girar o aparelho e ver o acabamento por todos os ângulos.</p>
+    </div>
+
+    <div class="color-picker reveal" id="colorPicker" role="group" aria-label="Escolha a cor do iPhone 18 Pro">
+      <button class="swatch" data-cor="Purple" data-hex="#7C6BA8" aria-pressed="true" title="Purple">
+        <span class="swatch-fill" style="background:linear-gradient(145deg,#9b8cc4,#6d5c99)"></span>
+      </button>
+      <button class="swatch" data-cor="Coffee" data-hex="#6E4E3A" aria-pressed="false" title="Coffee">
+        <span class="swatch-fill" style="background:linear-gradient(145deg,#8f6a50,#5b3f2e)"></span>
+      </button>
+      <button class="swatch" data-cor="Burgundy" data-hex="#6B1F2E" aria-pressed="false" title="Burgundy">
+        <span class="swatch-fill" style="background:linear-gradient(145deg,#8f2c3e,#511622)"></span>
+      </button>
+      <button class="swatch" data-cor="Black" data-hex="#1C1C1E" aria-pressed="false" title="Black">
+        <span class="swatch-fill" style="background:linear-gradient(145deg,#3a3a3d,#111113)"></span>
+      </button>
+    </div>
+
+    <p class="color-name reveal">
+      <span class="color-name-label">Cor selecionada</span>
+      <strong id="corSelecionada">Purple</strong>
+    </p>
 
     <div class="stage" id="stage3d">
       <div class="stage-loader" id="stageLoader"><div><div class="spinner"></div><span>Carregando modelo 3D…</span></div></div>
@@ -69,89 +99,46 @@
   </div>
 </section>
 
-<!-- ============ MARCAS ============ -->
-<div class="brands" aria-hidden="true">
-  <div class="brands-track">
-    <span><b>Apple</b> · autorizada</span><span>JBL <b>Áudio</b></span><span>Xiaomi <b>Ecossistema</b></span>
-    <span>Retirada <b>agendada</b></span><span>Entrega <b>na região</b></span><span>Suporte <b>CM4STORE</b></span>
-    <span><b>Apple</b> · autorizada</span><span>JBL <b>Áudio</b></span><span>Xiaomi <b>Ecossistema</b></span>
-    <span>Retirada <b>agendada</b></span><span>Entrega <b>na região</b></span><span>Suporte <b>CM4STORE</b></span>
-  </div>
-</div>
-
-<!-- ============ FEATURES ============ -->
-<section class="section" id="recursos">
-  <div class="container">
-    <div class="section-head reveal">
-      <span class="eyebrow">Tecnologia</span>
-      <h2 class="h2">Tudo o que muda no iPhone 18.</h2>
-      <p class="lead">Especificações preliminares baseadas no roadmap da Apple. Os dados finais serão atualizados assim que o produto for anunciado oficialmente.</p>
-    </div>
-
-    <div class="features-grid">
-      <article class="feature reveal">
-        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-        <h3>Câmera</h3>
-        <p>Sensor principal de 48MP, tele-objetiva periscópica e captura computacional reprocessada para fotos noturnas sem ruído.</p>
-        <div class="spec"><span>48MP principal</span><span>Zoom óptico 8x</span><span>Vídeo 4K120</span></div>
-      </article>
-
-      <article class="feature reveal">
-        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></div>
-        <h3>Processador</h3>
-        <p>O novo chip A20 em litografia de 2nm entrega mais desempenho por watt, Neural Engine ampliado e IA on-device em tempo real.</p>
-        <div class="spec"><span>Chip A20</span><span>2nm</span><span>Neural Engine</span></div>
-      </article>
-
-      <article class="feature reveal">
-        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="6" width="18" height="12" rx="2"/><path d="M23 13v-2"/><path d="M4 10v4h6v-4z" fill="currentColor" stroke="none"/></svg></div>
-        <h3>Bateria</h3>
-        <p>Maior densidade energética da história do iPhone, com carga rápida via USB-C e gerenciamento inteligente para o dia inteiro de uso.</p>
-        <div class="spec"><span>Autonomia estendida</span><span>USB-C 3.0</span><span>MagSafe</span></div>
-      </article>
-
-      <article class="feature reveal">
-        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 18h.01"/></svg></div>
-        <h3>Design</h3>
-        <p>Estrutura em titânio de grau aeroespacial, bordas mais finas, Ceramic Shield de nova geração e tela ProMotion até 120Hz.</p>
-        <div class="spec"><span>Titânio</span><span>ProMotion 120Hz</span><span>IP68</span></div>
-      </article>
-    </div>
-  </div>
-</section>
-
 <!-- ============ SPECS ============ -->
-<section class="section" id="specs" style="padding-top:0">
+<section class="section" id="specs" style="background:var(--bg-alt);border-block:1px solid var(--border)">
   <div class="container">
     <div class="section-head center reveal">
       <span class="eyebrow">Ficha técnica</span>
-      <h2 class="h2">Especificações.</h2>
-      <p class="lead">Um resumo do que está por dentro de cada iPhone 18.</p>
+      <h2 class="h2">Pro ou Pro Max.</h2>
+      <p class="lead">Especificações preliminares baseadas no roadmap da Apple. Os dados finais serão atualizados após o anúncio oficial.</p>
     </div>
 
-    <dl class="specs-grid reveal">
-      <div class="spec-cell"><dt>Chip</dt><dd>A20</dd><small>Processo de 2nm · 6 núcleos</small></div>
-      <div class="spec-cell"><dt>Tela</dt><dd>6,3" a 6,9"</dd><small>Super Retina XDR ProMotion 120Hz</small></div>
-      <div class="spec-cell"><dt>Câmera principal</dt><dd>48 MP</dd><small>Abertura ƒ/1.6 · estabilização sensor-shift</small></div>
-      <div class="spec-cell"><dt>Zoom óptico</dt><dd>até 8x</dd><small>Tele-objetiva periscópica (Pro Max)</small></div>
-      <div class="spec-cell"><dt>Vídeo</dt><dd>4K a 120 fps</dd><small>Dolby Vision · ProRes</small></div>
-      <div class="spec-cell"><dt>Material</dt><dd>Titânio</dd><small>Grau aeroespacial · Ceramic Shield 2</small></div>
-      <div class="spec-cell"><dt>Conexão</dt><dd>USB-C 3.0</dd><small>Até 10 Gb/s · MagSafe · 5G</small></div>
-      <div class="spec-cell"><dt>Resistência</dt><dd>IP68</dd><small>Até 6 m por 30 minutos</small></div>
-      <div class="spec-cell"><dt>Armazenamento</dt><dd>128 GB – 2 TB</dd><small>Conforme o modelo escolhido</small></div>
-      <div class="spec-cell"><dt>Bateria</dt><dd>Dia inteiro</dd><small>Carga rápida · gerenciamento adaptativo</small></div>
-      <div class="spec-cell"><dt>Sistema</dt><dd>iOS 20</dd><small>Apple Intelligence on-device</small></div>
-      <div class="spec-cell"><dt>Garantia</dt><dd>12 meses</dd><small>Garantia Apple + suporte CM4STORE</small></div>
-    </dl>
+    <div class="compare reveal">
+      <div class="compare-head">
+        <span></span>
+        <span class="compare-model">iPhone 18 Pro</span>
+        <span class="compare-model">iPhone 18 Pro Max</span>
+      </div>
+      <dl class="compare-body">
+        <div class="compare-row"><dt>Tela</dt><dd data-modelo="Pro">6,3" Super Retina XDR</dd><dd data-modelo="Pro Max">6,9" Super Retina XDR</dd></div>
+        <div class="compare-row"><dt>Taxa de atualização</dt><dd data-modelo="Pro">ProMotion 120Hz</dd><dd data-modelo="Pro Max">ProMotion 120Hz</dd></div>
+        <div class="compare-row"><dt>Chip</dt><dd data-modelo="Pro">A20 Pro · 2nm</dd><dd data-modelo="Pro Max">A20 Pro · 2nm</dd></div>
+        <div class="compare-row"><dt>Câmera principal</dt><dd data-modelo="Pro">48 MP ƒ/1.6</dd><dd data-modelo="Pro Max">48 MP ƒ/1.6</dd></div>
+        <div class="compare-row"><dt>Zoom óptico</dt><dd data-modelo="Pro">até 5x</dd><dd data-modelo="Pro Max">até 8x (periscópica)</dd></div>
+        <div class="compare-row"><dt>Vídeo</dt><dd data-modelo="Pro">4K 120 fps · ProRes</dd><dd data-modelo="Pro Max">4K 120 fps · ProRes</dd></div>
+        <div class="compare-row"><dt>Material</dt><dd data-modelo="Pro">Titânio · Ceramic Shield 2</dd><dd data-modelo="Pro Max">Titânio · Ceramic Shield 2</dd></div>
+        <div class="compare-row"><dt>Bateria</dt><dd data-modelo="Pro">Dia inteiro</dd><dd data-modelo="Pro Max">A maior já feita num iPhone</dd></div>
+        <div class="compare-row"><dt>Armazenamento</dt><dd data-modelo="Pro">256 GB · 512 GB · 1 TB</dd><dd data-modelo="Pro Max">256 GB · 512 GB · 1 TB · 2 TB</dd></div>
+        <div class="compare-row"><dt>Conexão</dt><dd data-modelo="Pro">USB-C 3.0 · MagSafe · 5G</dd><dd data-modelo="Pro Max">USB-C 3.0 · MagSafe · 5G</dd></div>
+        <div class="compare-row"><dt>Resistência</dt><dd data-modelo="Pro">IP68</dd><dd data-modelo="Pro Max">IP68</dd></div>
+        <div class="compare-row"><dt>Sistema</dt><dd data-modelo="Pro">iOS 20 · Apple Intelligence</dd><dd data-modelo="Pro Max">iOS 20 · Apple Intelligence</dd></div>
+        <div class="compare-row"><dt>Garantia</dt><dd data-modelo="Pro">12 meses Apple + CM4STORE</dd><dd data-modelo="Pro Max">12 meses Apple + CM4STORE</dd></div>
+      </dl>
+    </div>
   </div>
 </section>
 
 <!-- ============ MODELOS ============ -->
-<section class="section" id="modelos" style="background:var(--bg-alt);border-block:1px solid var(--border)">
+<section class="section" id="modelos">
   <div class="container">
     <div class="section-head center reveal">
       <span class="eyebrow">Escolha o seu</span>
-      <h2 class="h2">Qual iPhone 18 é o seu?</h2>
+      <h2 class="h2">Qual iPhone 18 Pro é o seu?</h2>
       <p class="lead">Valor promocional de lançamento: <strong class="neon" id="precoDestaque">R$ 14.999,97</strong> em qualquer configuração enquanto durar o lote.</p>
     </div>
 
@@ -162,7 +149,7 @@
 </section>
 
 <!-- ============ COMO FUNCIONA ============ -->
-<section class="section" id="como-funciona">
+<section class="section" id="como-funciona" style="background:var(--bg-alt);border-block:1px solid var(--border)">
   <div class="container">
     <div class="section-head center reveal">
       <span class="eyebrow">Simples assim</span>
@@ -178,31 +165,16 @@
 </section>
 
 <!-- ============ CTA ============ -->
-<section class="section" style="padding-top:0">
+<section class="section">
   <div class="container">
     <div class="cta-final reveal">
       <span class="eyebrow">Lote limitado</span>
-      <h2 class="h2">Seja um dos primeiros<br>a ter o iPhone 18.</h2>
+      <h2 class="h2">Seja um dos primeiros<br>a ter o iPhone 18 Pro.</h2>
       <p class="lead" style="text-align:center;margin-inline:auto">O pagamento garante sua unidade e a prioridade na fila de retirada, com cancelamento gratuito até 48h antes do horário agendado.</p>
       <div class="hero-cta">
-        <a href="#modelos" class="btn btn-primary">Comprar agora</a>
+        <a href="#modelos" class="btn btn-primary">Comprar</a>
         <a href="/checkout" class="btn btn-ghost">Ir para o checkout</a>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section class="section" id="faq" style="padding-top:0">
-  <div class="container narrow">
-    <div class="section-head center reveal"><span class="eyebrow">Dúvidas</span><h2 class="h2">Perguntas frequentes.</h2></div>
-    <div class="faq reveal">
-      <details open><summary>Quando recebo meu iPhone 18?</summary><p>A entrega e a retirada começam no dia oficial de lançamento no Brasil. Você recebe um aviso por e-mail e WhatsApp assim que o estoque chegar na loja.</p></details>
-      <details><summary>Quais formas de pagamento vocês aceitam?</summary><p>PIX com confirmação imediata, cartão de crédito em até 12x sem juros e boleto bancário. O processamento é feito por gateway certificado (MercadoPago/Stripe) e a CM4STORE não armazena dados do seu cartão.</p></details>
-      <details><summary>Posso trocar a cor ou a capacidade depois?</summary><p>Sim, até 48 horas antes da data agendada, sujeito à disponibilidade de estoque.</p></details>
-      <details><summary>Como funciona a entrega na região?</summary><p>Fazemos a entrega em mãos dentro da nossa área de cobertura, no dia e horário agendados por você no checkout.</p></details>
-      <details><summary>E se eu quiser cancelar?</summary><p>O cancelamento é gratuito até 48 horas antes do horário agendado, com estorno integral pelo mesmo meio de pagamento.</p></details>
-      <details><summary>Os preços podem mudar?</summary><p>O valor de lançamento está travado para quem compra agora. Após o anúncio oficial da Apple, as especificações e a tabela final serão atualizadas.</p></details>
     </div>
   </div>
 </section>
@@ -213,10 +185,10 @@
     <div class="footer-grid">
       <div>
         <a href="/" class="logo">CM4<b>STORE</b></a>
-        <p style="color:var(--text-muted);margin-top:14px;line-height:1.6;max-width:34ch">Apple, JBL e Xiaomi com atendimento próximo, garantia e agendamento de retirada. Tecnologia sem complicação.</p>
+        <p style="color:var(--text-muted);margin-top:14px;line-height:1.6;max-width:34ch">Lançamento oficial do iPhone 18 Pro e iPhone 18 Pro Max com atendimento próximo, garantia e agendamento de retirada.</p>
       </div>
-      <div><h5>Loja</h5><ul><li><a href="#modelos">iPhone 18</a></li><li><a href="#modelos">iPhone 18 Pro</a></li><li><a href="#modelos">iPhone 18 Pro Max</a></li><li><a href="/checkout">Checkout</a></li></ul></div>
-      <div><h5>Ajuda</h5><ul><li><a href="#faq">Dúvidas frequentes</a></li><li><a href="#como-funciona">Como funciona</a></li><li><a href="#specs">Especificações</a></li><li><a href="mailto:contato@cm4store.com">contato@cm4store.com</a></li></ul></div>
+      <div><h5>Loja</h5><ul><li><a href="#modelos">iPhone 18 Pro</a></li><li><a href="#modelos">iPhone 18 Pro Max</a></li><li><a href="#cores">Cores</a></li><li><a href="/checkout">Checkout</a></li></ul></div>
+      <div><h5>Ajuda</h5><ul><li><a href="#como-funciona">Como funciona</a></li><li><a href="#specs">Especificações</a></li><li><a href="mailto:contato@cm4store.com">contato@cm4store.com</a></li></ul></div>
       <div><h5>CM4STORE</h5><ul>
         <li><a href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a></li>
         <li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li>

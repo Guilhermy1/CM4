@@ -81,7 +81,7 @@
 
   /* ================== ABAS ================== */
   const TITULOS = {
-    dashboard: ['Dashboard', 'Visão geral da pré-venda do iPhone 18'],
+    dashboard: ['Dashboard', 'Visão geral da pré-venda do iPhone 18 Pro'],
     pedidos: ['Pedidos', 'Acompanhe e atualize o status de cada pedido'],
     agendamentos: ['Agendamentos', 'Retiradas e entregas com data e hora'],
     estoque: ['Estoque', 'Disponibilidade por cor e capacidade'],

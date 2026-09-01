@@ -1,7 +1,11 @@
 /* ============================================================
-   CM4STORE - iPhone 18 em 3D (Three.js)
-   Modelo gerado proceduralmente: nao depende de download de .glb,
-   e a cor do corpo/tela acompanha a variante escolhida na loja.
+   CM4STORE - iPhone 18 Pro em 3D (Three.js)
+   Modelo gerado proceduralmente (sem download de .glb):
+   - moldura em aco/titanio com brilho especular
+   - vidro traseiro com gradiente natural por cor
+   - tela com bezel fino, Dynamic Island e reflexo
+   - modulo de cameras com lentes, anel metalico e reflexo real
+   - troca de cor animada (lerp) + giro suave do aparelho
    ============================================================ */
 (function (global) {
   'use strict';
@@ -15,8 +19,8 @@
 
     const cena = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(32, largura / altura, 0.1, 100);
-    camera.position.set(0, 0, 12.5);
+    const camera = new THREE.PerspectiveCamera(30, largura / altura, 0.1, 100);
+    camera.position.set(0, 0, 13.2);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(largura, altura);
@@ -24,27 +28,68 @@
     if (THREE.sRGBEncoding !== undefined) renderer.outputEncoding = THREE.sRGBEncoding;
     container.appendChild(renderer.domElement);
 
-    /* ---------- Luzes (calibradas para fundo claro) ---------- */
-    cena.add(new THREE.AmbientLight(0xffffff, 0.9));
+    /* ---------- Ambiente refletido (studio) ----------
+       Um envMap procedural em canvas da o brilho "de vitrine" nos metais
+       e nas lentes, sem depender de nenhum arquivo externo.            */
+    function criarEnvMap() {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 256;
+      const g = c.getContext('2d');
+      const grad = g.createLinearGradient(0, 0, 0, 256);
+      grad.addColorStop(0.00, '#ffffff');
+      grad.addColorStop(0.42, '#e9e9ee');
+      grad.addColorStop(0.52, '#9a9aa2');
+      grad.addColorStop(1.00, '#2c2c30');
+      g.fillStyle = grad; g.fillRect(0, 0, 512, 256);
+      // faixas de softbox (reflexos alongados tipicos de estudio)
+      g.fillStyle = 'rgba(255,255,255,.95)';
+      g.fillRect(40, 24, 150, 60);
+      g.fillRect(300, 40, 120, 44);
+      g.fillStyle = 'rgba(0,0,0,.28)';
+      g.fillRect(210, 96, 70, 160);
+      const tex = new THREE.CanvasTexture(c);
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      if (THREE.sRGBEncoding !== undefined) tex.encoding = THREE.sRGBEncoding;
 
-    // Luz de ambiente hemisferica: ceu claro + rebote do "chao" cinza
-    if (THREE.HemisphereLight) cena.add(new THREE.HemisphereLight(0xffffff, 0xd6d6da, 0.85));
+      // PMREM deixa o reflexo fisicamente correto nos materiais PBR
+      try {
+        if (THREE.PMREMGenerator) {
+          const pmrem = new THREE.PMREMGenerator(renderer);
+          pmrem.compileEquirectangularShader();
+          const alvo = pmrem.fromEquirectangular(tex);
+          tex.dispose();
+          pmrem.dispose();
+          return alvo.texture;
+        }
+      } catch (e) { /* usa a textura crua se o PMREM falhar */ }
+      return tex;
+    }
+    const envMap = criarEnvMap();
+    cena.environment = envMap;
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.35);
-    keyLight.position.set(5, 7, 8);
+    /* ---------- Luzes ---------- */
+    cena.add(new THREE.AmbientLight(0xffffff, 0.55));
+    if (THREE.HemisphereLight) cena.add(new THREE.HemisphereLight(0xffffff, 0xd2d2d8, 0.7));
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    keyLight.position.set(5, 8, 9);
     cena.add(keyLight);
 
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    rimLight.position.set(-7, 4, -6);
+    cena.add(rimLight);
+
     // Rim verde CM4STORE - discreto sobre fundo claro
-    const rimNeon = new THREE.PointLight(0x7fd000, 2.2, 40);
-    rimNeon.position.set(-6, 3, -4);
+    const rimNeon = new THREE.PointLight(0x7fd000, 1.4, 40);
+    rimNeon.position.set(-6, 3, -3);
     cena.add(rimNeon);
 
-    const fill = new THREE.PointLight(0xffffff, 2.0, 40);
-    fill.position.set(6, -4, 4);
+    const fill = new THREE.PointLight(0xffffff, 1.5, 40);
+    fill.position.set(6, -4, 5);
     cena.add(fill);
 
-    /* ---------- Geometria utilitaria: retangulo arredondado extrudado ---------- */
-    function placaArredondada(l, a, prof, raio, segmentos = 6) {
+    /* ---------- Geometria: retangulo arredondado extrudado ---------- */
+    function placaArredondada(l, a, prof, raio, opts = {}) {
       const forma = new THREE.Shape();
       const x = -l / 2, y = -a / 2;
       forma.moveTo(x + raio, y);
@@ -58,120 +103,249 @@
       forma.quadraticCurveTo(x, y, x + raio, y);
 
       const geo = new THREE.ExtrudeGeometry(forma, {
-        depth: prof, bevelEnabled: true, bevelThickness: 0.045,
-        bevelSize: 0.045, bevelSegments: segmentos, curveSegments: 18
+        depth: prof,
+        bevelEnabled: opts.bevel !== false,
+        bevelThickness: opts.bevelThickness ?? 0.03,
+        bevelSize: opts.bevelSize ?? 0.03,
+        bevelSegments: opts.bevelSegments ?? 6,
+        curveSegments: opts.curveSegments ?? 24
       });
       geo.center();
       return geo;
     }
 
+    /* ---------- Cores derivadas da variante ---------- */
+    const corBase = new THREE.Color(opcoes.cor || '#7C6BA8');
+
+    // moldura metalica: mesma matiz, bem mais clara e dessaturada (titanio tingido)
+    function tonalMoldura(c) {
+      const hsl = { h: 0, s: 0, l: 0 };
+      c.getHSL(hsl);
+      return new THREE.Color().setHSL(hsl.h, Math.min(hsl.s * 0.42, 0.28), Math.min(0.62 + hsl.l * 0.22, 0.82));
+    }
+    // vidro traseiro inferior: versao mais escura, cria o gradiente natural
+    function tonalFundo(c) {
+      const hsl = { h: 0, s: 0, l: 0 };
+      c.getHSL(hsl);
+      return new THREE.Color().setHSL(hsl.h, hsl.s, Math.max(hsl.l * 0.55, 0.045));
+    }
+
     /* ---------- Materiais ---------- */
-    const matCorpo = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(opcoes.cor || '#b8b0a5'), metalness: 0.92, roughness: 0.28
+    const matVidroTraseiro = new THREE.MeshStandardMaterial({
+      color: corBase.clone(), metalness: 0.35, roughness: 0.34, envMap, envMapIntensity: 0.85
     });
+    const matMoldura = new THREE.MeshStandardMaterial({
+      color: tonalMoldura(corBase), metalness: 1, roughness: 0.16, envMap, envMapIntensity: 1.5
+    });
+    const matSombraFundo = new THREE.MeshStandardMaterial({
+      color: tonalFundo(corBase), metalness: 0.4, roughness: 0.4, transparent: true, opacity: 0.55, envMap
+    });
+    const matBezel = new THREE.MeshStandardMaterial({ color: 0x08090b, metalness: 0.5, roughness: 0.3 });
     const matTela = new THREE.MeshStandardMaterial({
-      color: 0x05070a, metalness: 0.15, roughness: 0.08,
-      emissive: new THREE.Color(0x7fd000), emissiveIntensity: 0.14
+      color: 0x05070a, metalness: 0.05, roughness: 0.06,
+      emissive: new THREE.Color(0x0d1a05), emissiveIntensity: 0.9, envMap, envMapIntensity: 0.35
     });
-    const matVidro = new THREE.MeshStandardMaterial({ color: 0x0b0d10, metalness: 0.6, roughness: 0.12 });
-    const matLente = new THREE.MeshStandardMaterial({ color: 0x0a0c0f, metalness: 1, roughness: 0.05 });
-    const matAnel = new THREE.MeshStandardMaterial({ color: 0x8a9099, metalness: 1, roughness: 0.22 });
+    const matVidroModulo = new THREE.MeshStandardMaterial({
+      color: tonalFundo(corBase), metalness: 0.55, roughness: 0.22, envMap, envMapIntensity: 1.1
+    });
+    const matAnel = new THREE.MeshStandardMaterial({ color: 0xb9bcc2, metalness: 1, roughness: 0.14, envMap, envMapIntensity: 1.6 });
+    const matLenteVidro = new THREE.MeshStandardMaterial({ color: 0x05070c, metalness: 0.95, roughness: 0.04, envMap, envMapIntensity: 1.8 });
+    const matBotao = new THREE.MeshStandardMaterial({ color: tonalMoldura(corBase), metalness: 1, roughness: 0.2, envMap, envMapIntensity: 1.4 });
     const matNeon = new THREE.MeshBasicMaterial({ color: 0x7fd000 });
+    const matEspecular = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
 
     /* ---------- Montagem do aparelho ---------- */
-    const L = 3.05, A = 6.3, P = 0.42, R = 0.55;
+    const L = 3.05, A = 6.42, P = 0.36, R = 0.62;
     const telefone = new THREE.Group();
 
-    const corpo = new THREE.Mesh(placaArredondada(L, A, P, R), matCorpo);
-    telefone.add(corpo);
+    // 1) Moldura (banda lateral) - um pouco maior e mais espessa
+    const moldura = new THREE.Mesh(
+      placaArredondada(L, A, P, R, { bevelThickness: 0.035, bevelSize: 0.035, bevelSegments: 8 }),
+      matMoldura
+    );
+    telefone.add(moldura);
 
-    // Tela (frente)
-    const tela = new THREE.Mesh(placaArredondada(L - 0.16, A - 0.16, 0.03, R - 0.07), matTela);
-    tela.position.z = P / 2 + 0.055;
+    // 2) Vidro traseiro (levemente recuado dentro da moldura)
+    const traseira = new THREE.Mesh(
+      placaArredondada(L - 0.075, A - 0.075, 0.04, R - 0.035, { bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 4 }),
+      matVidroTraseiro
+    );
+    traseira.position.z = -P / 2 - 0.028;
+    telefone.add(traseira);
+
+    // 2b) Gradiente natural: sombreamento na metade inferior do vidro
+    const gradienteFundo = new THREE.Mesh(
+      placaArredondada(L - 0.09, (A - 0.09) * 0.52, 0.005, R - 0.06, { bevel: false }),
+      matSombraFundo
+    );
+    gradienteFundo.position.set(0, -(A - 0.09) * 0.24, -P / 2 - 0.052);
+    telefone.add(gradienteFundo);
+
+    // 3) Vidro frontal / bezel preto
+    const bezel = new THREE.Mesh(
+      placaArredondada(L - 0.07, A - 0.07, 0.035, R - 0.03, { bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 4 }),
+      matBezel
+    );
+    bezel.position.z = P / 2 + 0.026;
+    telefone.add(bezel);
+
+    // 4) Tela ativa (bezel fino e uniforme, como no aparelho real)
+    const BEZEL = 0.085;
+    const tela = new THREE.Mesh(
+      placaArredondada(L - 0.07 - BEZEL * 2, A - 0.07 - BEZEL * 2, 0.012, R - 0.09, { bevel: false }),
+      matTela
+    );
+    tela.position.z = P / 2 + 0.05;
     telefone.add(tela);
 
-    // Brilho/reflexo diagonal na tela
-    const brilhoGeo = new THREE.PlaneGeometry(L * 0.62, A * 0.95);
-    const brilhoMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.045 });
-    const brilho = new THREE.Mesh(brilhoGeo, brilhoMat);
-    brilho.position.set(-0.35, 0, P / 2 + 0.08);
-    brilho.rotation.z = 0.32;
+    // 5) Reflexo diagonal no vidro frontal
+    const brilho = new THREE.Mesh(
+      new THREE.PlaneGeometry(L * 0.5, A * 1.02),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.055 })
+    );
+    brilho.position.set(-0.42, 0, P / 2 + 0.058);
+    brilho.rotation.z = 0.3;
     telefone.add(brilho);
 
-    // Dynamic Island
-    const ilha = new THREE.Mesh(placaArredondada(0.66, 0.23, 0.05, 0.11, 4), matVidro);
-    ilha.position.set(0, A / 2 - 0.62, P / 2 + 0.08);
+    const brilho2 = new THREE.Mesh(
+      new THREE.PlaneGeometry(L * 0.16, A * 1.02),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 })
+    );
+    brilho2.position.set(0.42, 0, P / 2 + 0.058);
+    brilho2.rotation.z = 0.3;
+    telefone.add(brilho2);
+
+    // 6) Dynamic Island
+    const ilha = new THREE.Mesh(
+      placaArredondada(0.62, 0.2, 0.02, 0.1, { bevel: false }),
+      new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0.2, roughness: 0.25 })
+    );
+    ilha.position.set(0, A / 2 - 0.52, P / 2 + 0.056);
     telefone.add(ilha);
 
-    // Logo neon discreto no verso
-    const logo = new THREE.Mesh(new THREE.CircleGeometry(0.2, 24), matNeon);
+    // camera frontal dentro da ilha
+    const camFrontal = new THREE.Mesh(
+      new THREE.CircleGeometry(0.052, 20),
+      new THREE.MeshStandardMaterial({ color: 0x0a1620, metalness: 1, roughness: 0.08, envMap, envMapIntensity: 1.6 })
+    );
+    camFrontal.position.set(0.19, ilha.position.y, P / 2 + 0.068);
+    telefone.add(camFrontal);
+
+    // 7) Logo neon discreto no verso
+    const logo = new THREE.Mesh(new THREE.CircleGeometry(0.2, 32), matNeon);
     logo.position.set(0, 0.1, -P / 2 - 0.056);
     logo.rotation.y = Math.PI;
     telefone.add(logo);
 
-    // Modulo de cameras (verso)
-    const modulo = new THREE.Mesh(placaArredondada(1.42, 1.42, 0.14, 0.42), matVidro);
-    modulo.position.set(-L / 2 + 0.92, A / 2 - 1.0, -P / 2 - 0.09);
+    // 8) Modulo de cameras (verso)
+    const modulo = new THREE.Mesh(
+      placaArredondada(1.5, 1.5, 0.13, 0.46, { bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 5 }),
+      matVidroModulo
+    );
+    modulo.position.set(-L / 2 + 0.94, A / 2 - 1.06, -P / 2 - 0.1);
     telefone.add(modulo);
 
-    const posLentes = [[-0.3, 0.3], [0.3, 0.3], [0, -0.32]];
+    const posLentes = [[-0.31, 0.31], [0.31, 0.31], [0, -0.33]];
     posLentes.forEach(([x, y]) => {
-      const anel = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.1, 28), matAnel);
+      const cx = modulo.position.x + x, cy = modulo.position.y + y;
+
+      // anel metalico externo
+      const anel = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.30, 0.14, 40), matAnel);
       anel.rotation.x = Math.PI / 2;
-      anel.position.set(modulo.position.x + x, modulo.position.y + y, -P / 2 - 0.2);
+      anel.position.set(cx, cy, -P / 2 - 0.2);
       telefone.add(anel);
 
-      const lente = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.13, 28), matLente);
+      // vidro da lente (levemente abaulado)
+      const lente = new THREE.Mesh(new THREE.SphereGeometry(0.215, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2.35), matLenteVidro);
       lente.rotation.x = Math.PI / 2;
-      lente.position.set(modulo.position.x + x, modulo.position.y + y, -P / 2 - 0.24);
+      lente.position.set(cx, cy, -P / 2 - 0.245);
       telefone.add(lente);
 
-      const reflexo = new THREE.Mesh(new THREE.CircleGeometry(0.06, 16), new THREE.MeshBasicMaterial({ color: 0x9fe23a }));
-      reflexo.position.set(modulo.position.x + x - 0.05, modulo.position.y + y + 0.05, -P / 2 - 0.31);
+      // iris interna
+      const iris = new THREE.Mesh(
+        new THREE.CircleGeometry(0.115, 28),
+        new THREE.MeshStandardMaterial({ color: 0x0a1a2e, metalness: 1, roughness: 0.12, envMap, envMapIntensity: 1.4 })
+      );
+      iris.position.set(cx, cy, -P / 2 - 0.245);
+      iris.rotation.y = Math.PI;
+      telefone.add(iris);
+
+      // reflexo especular principal (brilho de estudio)
+      const reflexo = new THREE.Mesh(new THREE.CircleGeometry(0.062, 20), matEspecular);
+      reflexo.position.set(cx - 0.085, cy + 0.085, -P / 2 - 0.33);
       reflexo.rotation.y = Math.PI;
       telefone.add(reflexo);
+
+      // segundo reflexo, menor
+      const reflexo2 = new THREE.Mesh(
+        new THREE.CircleGeometry(0.028, 16),
+        new THREE.MeshBasicMaterial({ color: 0xdff3ff, transparent: true, opacity: 0.6 })
+      );
+      reflexo2.position.set(cx + 0.09, cy - 0.09, -P / 2 - 0.33);
+      reflexo2.rotation.y = Math.PI;
+      telefone.add(reflexo2);
     });
 
-    // Flash
-    const flash = new THREE.Mesh(new THREE.CircleGeometry(0.09, 16), new THREE.MeshBasicMaterial({ color: 0xfff3c4 }));
-    flash.position.set(modulo.position.x + 0.36, modulo.position.y - 0.34, -P / 2 - 0.17);
+    // Flash LED duplo + sensor LiDAR
+    const flash = new THREE.Mesh(
+      new THREE.CircleGeometry(0.085, 20),
+      new THREE.MeshBasicMaterial({ color: 0xfff4cf })
+    );
+    flash.position.set(modulo.position.x + 0.42, modulo.position.y - 0.3, -P / 2 - 0.18);
     flash.rotation.y = Math.PI;
     telefone.add(flash);
 
-    // Botoes laterais
+    const lidar = new THREE.Mesh(
+      new THREE.CircleGeometry(0.062, 18),
+      new THREE.MeshStandardMaterial({ color: 0x14181f, metalness: 1, roughness: 0.1, envMap, envMapIntensity: 1.5 })
+    );
+    lidar.position.set(modulo.position.x + 0.42, modulo.position.y + 0.34, -P / 2 - 0.18);
+    lidar.rotation.y = Math.PI;
+    telefone.add(lidar);
+
+    // 9) Botoes laterais em aco
     const botao = (h, y, x) => {
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.07, h, 0.24), matAnel);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.045, h, 0.19), matBotao);
       b.position.set(x, y, 0);
       telefone.add(b);
     };
-    botao(0.75, 1.35, L / 2 + 0.02);   // power
-    botao(0.42, 1.7, -L / 2 - 0.02);   // volume +
-    botao(0.42, 1.15, -L / 2 - 0.02);  // volume -
-    botao(0.3, 2.25, -L / 2 - 0.02);   // action button
+    botao(0.8, 1.3, L / 2 + 0.012);    // power
+    botao(0.44, 1.72, -L / 2 - 0.012); // volume +
+    botao(0.44, 1.16, -L / 2 - 0.012); // volume -
+    botao(0.3, 2.3, -L / 2 - 0.012);   // action button
 
-    telefone.rotation.set(0.12, -0.42, 0);
+    telefone.rotation.set(0.1, -0.4, 0);
     cena.add(telefone);
 
-    // Halo suave atras do aparelho (fundo claro: cinza levemente esverdeado)
+    // Halo suave atras do aparelho
     const halo = new THREE.Mesh(
-      new THREE.CircleGeometry(4.2, 48),
+      new THREE.CircleGeometry(4.4, 64),
       new THREE.MeshBasicMaterial({ color: 0x7fd000, transparent: true, opacity: 0.035 })
     );
-    halo.position.z = -3.2;
+    halo.position.z = -3.4;
     cena.add(halo);
 
-    // Sombra de contato sob o aparelho, ancorando o objeto no fundo claro
-    const sombra = new THREE.Mesh(
-      new THREE.CircleGeometry(1.9, 40),
-      new THREE.MeshBasicMaterial({ color: 0x1d1d1f, transparent: true, opacity: 0.1 })
+    // Sombra de contato (dois niveis: nucleo + difusa) para dar profundidade
+    const sombraNucleo = new THREE.Mesh(
+      new THREE.CircleGeometry(1.5, 48),
+      new THREE.MeshBasicMaterial({ color: 0x1d1d1f, transparent: true, opacity: 0.16 })
     );
-    sombra.rotation.x = -Math.PI / 2;
-    sombra.position.set(0, -3.75, 0);
-    sombra.scale.set(1, 0.5, 1);
-    cena.add(sombra);
+    sombraNucleo.rotation.x = -Math.PI / 2;
+    sombraNucleo.position.set(0, -3.72, 0);
+    sombraNucleo.scale.set(1, 0.42, 1);
+    cena.add(sombraNucleo);
+
+    const sombraDifusa = new THREE.Mesh(
+      new THREE.CircleGeometry(2.6, 48),
+      new THREE.MeshBasicMaterial({ color: 0x1d1d1f, transparent: true, opacity: 0.07 })
+    );
+    sombraDifusa.rotation.x = -Math.PI / 2;
+    sombraDifusa.position.set(0, -3.76, 0);
+    sombraDifusa.scale.set(1, 0.45, 1);
+    cena.add(sombraDifusa);
 
     /* ---------- Interacao (arrastar) ---------- */
-    const estado = { alvoY: -0.42, alvoX: 0.12, arrastando: false, ultX: 0, ultY: 0, autoRotacao: true };
+    const estado = { alvoY: -0.4, alvoX: 0.1, arrastando: false, ultX: 0, ultY: 0, autoRotacao: true };
 
     const inicio = (x, y) => { estado.arrastando = true; estado.autoRotacao = false; estado.ultX = x; estado.ultY = y; };
     const mover = (x, y) => {
@@ -193,6 +367,18 @@
     el.addEventListener('pointercancel', fim);
     el.addEventListener('touchmove', (e) => { if (estado.arrastando) e.preventDefault(); }, { passive: false });
 
+    /* ---------- Transicao de cor animada ---------- */
+    const transicao = { ativa: false, t: 0, dur: 0.85, de: corBase.clone(), para: corBase.clone() };
+
+    function aplicarCor(c) {
+      matVidroTraseiro.color.copy(c);
+      matMoldura.color.copy(tonalMoldura(c));
+      matBotao.color.copy(tonalMoldura(c));
+      matSombraFundo.color.copy(tonalFundo(c));
+      matVidroModulo.color.copy(tonalFundo(c));
+    }
+    aplicarCor(corBase);
+
     /* ---------- Loop ---------- */
     let rafId = null;
     let ativo = true;
@@ -202,20 +388,35 @@
       rafId = requestAnimationFrame(animar);
       if (!ativo) return;
 
+      const dt = relogio.getDelta();
       const t = relogio.getElapsedTime();
-      if (estado.autoRotacao) estado.alvoY += 0.0055;
 
-      telefone.rotation.y += (estado.alvoY - telefone.rotation.y) * 0.08;
-      telefone.rotation.x += (estado.alvoX - telefone.rotation.x) * 0.08;
-      const flutuar = Math.sin(t * 0.9) * 0.13;
+      if (estado.autoRotacao) estado.alvoY += 0.0045;
+
+      // easing da rotacao (mais suave durante a troca de cor)
+      const suavidade = transicao.ativa ? 0.045 : 0.08;
+      telefone.rotation.y += (estado.alvoY - telefone.rotation.y) * suavidade;
+      telefone.rotation.x += (estado.alvoX - telefone.rotation.x) * suavidade;
+
+      // interpolacao da cor
+      if (transicao.ativa) {
+        transicao.t = Math.min(transicao.t + dt / transicao.dur, 1);
+        const e = transicao.t < 0.5
+          ? 4 * transicao.t ** 3
+          : 1 - (-2 * transicao.t + 2) ** 3 / 2; // easeInOutCubic
+        aplicarCor(transicao.de.clone().lerp(transicao.para, e));
+        if (transicao.t >= 1) { transicao.ativa = false; aplicarCor(transicao.para); }
+      }
+
+      const flutuar = Math.sin(t * 0.9) * 0.12;
       telefone.position.y = flutuar;
-      matTela.emissiveIntensity = 0.12 + Math.sin(t * 1.5) * 0.05;
-      rimNeon.intensity = 2.0 + Math.sin(t * 1.2) * 0.5;
+      matTela.emissiveIntensity = 0.85 + Math.sin(t * 1.5) * 0.15;
+      rimNeon.intensity = 1.3 + Math.sin(t * 1.2) * 0.35;
 
-      // sombra acompanha o flutuar (menor e mais fraca quando o aparelho sobe)
-      const s = 1 - flutuar * 0.28;
-      sombra.scale.set(s, s * 0.5, 1);
-      sombra.material.opacity = 0.1 - flutuar * 0.022;
+      const s = 1 - flutuar * 0.3;
+      sombraNucleo.scale.set(s, s * 0.42, 1);
+      sombraNucleo.material.opacity = 0.16 - flutuar * 0.035;
+      sombraDifusa.scale.set(s * 1.04, s * 0.45, 1);
 
       renderer.render(cena, camera);
     }
@@ -237,7 +438,25 @@
     global.addEventListener('resize', redimensionar);
 
     return {
-      definirCor(hex) { matCorpo.color = new THREE.Color(hex || '#b8b0a5'); },
+      /**
+       * Troca a cor do aparelho.
+       * @param {string} hex  cor destino
+       * @param {object} opts { girar:true } faz o iPhone dar uma volta suave
+       */
+      definirCor(hex, opts = {}) {
+        const destino = new THREE.Color(hex || '#7C6BA8');
+        transicao.de = matVidroTraseiro.color.clone();
+        transicao.para = destino;
+        transicao.t = 0;
+        transicao.ativa = true;
+
+        if (opts.girar !== false) {
+          estado.autoRotacao = false;
+          estado.alvoY += Math.PI * 2; // giro completo, suavizado pelo lerp do loop
+          clearTimeout(estado.timer);
+          estado.timer = setTimeout(() => { estado.autoRotacao = true; }, 3200);
+        }
+      },
       destruir() { cancelAnimationFrame(rafId); renderer.dispose(); el.remove(); }
     };
   }

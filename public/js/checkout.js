@@ -83,8 +83,8 @@
       const entrega = tipoEntrega() === 'entrega';
       camposEndereco.hidden = !entrega;
       if (subAgenda) subAgenda.textContent = entrega
-        ? 'Escolha quando quer receber seu iPhone 18 em casa.'
-        : 'Escolha quando quer retirar seu iPhone 18.';
+        ? 'Escolha quando quer receber seu iPhone 18 Pro em casa.'
+        : 'Escolha quando quer retirar seu iPhone 18 Pro.';
     })
   );
 

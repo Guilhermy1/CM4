@@ -1,8 +1,8 @@
-# CM4STORE — iPhone 18
+# CM4STORE — iPhone 18 Pro | iPhone 18 Pro Max
 
 Plataforma completa de venda (landing page 3D + API REST + painel administrativo + checkout com pagamento e agendamento), pronta para deploy na Vercel.
 
-**Marca:** CM4STORE · Verde `#7FD000` · Cinza escuro · Branco — Apple | JBL | Xiaomi
+**Marca:** CM4STORE · Verde `#7FD000` · Cinza escuro · Branco — foco total no lançamento do iPhone 18 Pro
 
 **Design:** linguagem visual inspirada na Apple — fundo cinza claro (`#F5F5F7`), tipografia do sistema (`-apple-system` / Helvetica Neue), espaçamento generoso (escala 8/16/24/32/48/64/96), cards claros e animações discretas — mantendo o verde CM4STORE como cor de ação.
 
@@ -59,7 +59,7 @@ cm4store/
 │  ├─ middleware/            # auth JWT + tratamento de erros
 │  └─ utils/                 # seed, helpers
 └─ public/
-   ├─ index.html             # landing (hero 3D, features, specs, modelos, FAQ)
+   ├─ index.html             # landing (hero, seletor de cores + 3D, specs, modelos)
    ├─ checkout.html          # checkout + agendamento + pagamento
    ├─ confirmacao.html       # nº do pedido, pagamento e dados do agendamento
    ├─ admin/index.html       # painel administrativo
@@ -106,7 +106,7 @@ Base: `/api`
 ## Regras de negócio implementadas
 
 - **Preço fixo de pré-venda:** R$ 14.999,97 em todas as variantes (`PRECO_PADRAO` no `.env`). Os acréscimos por modelo/capacidade já estão preparados em `src/utils/seedData.js`, zerados até o anúncio oficial.
-- **Catálogo:** iPhone 18, 18 Pro e 18 Pro Max, cada um com 4 cores × 3–4 capacidades (SKU único por variante).
+- **Catálogo:** iPhone 18 Pro e 18 Pro Max, cada um nas cores Purple, Coffee, Burgundy e Black × 3–4 capacidades (SKU único por variante).
 - **Estoque:** baixa automática na criação do pedido e devolução ao cancelar.
 - **Agenda:** seg–sáb, 16 horários (09:00–17:30), **2 vagas por horário** (`CAPACIDADE_POR_SLOT` em `src/utils/helpers.js`). Slots lotados são bloqueados no front e validados no back.
 - **Entrega:** retirada agendada ou entrega na região (endereço validado quando aplicável). Sem segmentação geográfica no site — fica a cargo do Meta Ads.
